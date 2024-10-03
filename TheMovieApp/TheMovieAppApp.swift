@@ -13,33 +13,23 @@ import Factories
 
 @main
 struct TheMovieAppApp: App {
+    let viewModelBuilder: MovieViewModelsBuilder
+    var movieViewModel: MoviesViewModel
+    
+    init() {
+        // Construct the ViewModelBuilder using the Builder pattern
+        viewModelBuilder = MovieViewModelsBuilder()
+            .setNetworkClient()
+            .setRemoteDataSource()
+            .setRepositoryFactory()
+            .setUseCaseFactory()
+        movieViewModel = viewModelBuilder.buildMoviesViewModel()
+    }
+    
     var body: some Scene {
         WindowGroup {
-            // Network Client
-            let networkClient = NetworkClient()
-            
-            // Remote Data Source
-            let remoteDataSource = RemoteDataSource(networkClient: networkClient)
-            
-            // Repository Factory
-            let repositoryFactory = RepositoryFactory(remoteDataSource: remoteDataSource)
-            
-            // Use Case Factory
-            let useCaseFactory = UseCaseFactory(repositoryFactory: repositoryFactory)
-            
-            // View Models
-            let moviesViewModel = MoviesViewModel(
-                getGenresUseCase: useCaseFactory.createGetGenresUseCase(),
-                getTrendingMoviesUseCase: useCaseFactory.createGetTrendingMoviesUseCase()
-            )
-            
-            // Main View
-            MoviesListView(viewModel: moviesViewModel) { movieID in
-                // Build and present the MovieDetailView
-                let movieDetailViewModel = MovieDetailViewModel(
-                    movieID: movieID,
-                    getMovieDetailUseCase: useCaseFactory.createGetMovieDetailUseCase()
-                )
+            MoviesListView(viewModel: movieViewModel) { movieID in
+                let movieDetailViewModel = viewModelBuilder.buildMovieDetailViewModel(movieID: movieID)
                 return MovieDetailView(viewModel: movieDetailViewModel)
             }
         }
