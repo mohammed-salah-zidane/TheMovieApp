@@ -422,7 +422,7 @@
 				CODE_SIGN_ENTITLEMENTS = TheMovieApp/TheMovieApp.entitlements;
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
-				DEVELOPMENT_ASSET_PATHS = "\"TheMovieApp/Preview Content\"";
+				DEVELOPMENT_ASSET_PATHS = "\"TheMovieApp/SupportingFiles/Preview Content\"";
 				DEVELOPMENT_TEAM = 7L998UXP4V;
 				ENABLE_HARDENED_RUNTIME = YES;
 				ENABLE_PREVIEWS = YES;
@@ -462,7 +462,7 @@
 				CODE_SIGN_ENTITLEMENTS = TheMovieApp/TheMovieApp.entitlements;
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
-				DEVELOPMENT_ASSET_PATHS = "\"TheMovieApp/Preview Content\"";
+				DEVELOPMENT_ASSET_PATHS = "\"TheMovieApp/SupportingFiles/Preview Content\"";
 				DEVELOPMENT_TEAM = 7L998UXP4V;
 				ENABLE_HARDENED_RUNTIME = YES;
 				ENABLE_PREVIEWS = YES;
