@@ -7,8 +7,6 @@ A modular iOS application built using **SwiftUI** and **Combine**, following **C
 - **Trending Movies List**: Displays a paginated list of trending movies.
 - **Search and Filter**: Supports searching movies by title and filtering by genres.
 - **Movie Details**: Provides detailed information about selected movies including budget, revenue, and runtime.
-- **Offline Support**: The app can function in offline mode by caching data locally.
-
 ---
 
 ## Architecture
