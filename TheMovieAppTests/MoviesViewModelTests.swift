@@ -19,8 +19,17 @@ class MockGetGenresUseCase: GetGenresUseCaseProtocol {
 }
 
 class MockGetTrendingMoviesUseCase: GetTrendingMoviesUseCaseProtocol {
-    func execute(page: Int) -> AnyPublisher<[Movie], Error> {
+    func execute(page: Int, genreId: Int?) -> AnyPublisher<[Movie], Error> {
         let movies = [Movie(id: 1, title: "Test Movie", posterPath: nil, releaseDate: "2022-01-01", genreIDs: [1])]
+        return Just(movies)
+            .setFailureType(to: Error.self)
+            .eraseToAnyPublisher()
+    }
+}
+
+class MockSearchMoviesUseCase: SearchMoviesUseCaseProtocol {
+    func execute(query: String, page: Int) -> AnyPublisher<[Movie], Error> {
+        let movies = [Movie(id: 2, title: "Search Result", posterPath: nil, releaseDate: "2022-02-02", genreIDs: [2])]
         return Just(movies)
             .setFailureType(to: Error.self)
             .eraseToAnyPublisher()
@@ -35,7 +44,10 @@ class MoviesViewModelTests: XCTestCase {
         super.setUp()
         let getGenresUseCase = MockGetGenresUseCase()
         let getTrendingMoviesUseCase = MockGetTrendingMoviesUseCase()
-        viewModel = MoviesViewModel(getGenresUseCase: getGenresUseCase, getTrendingMoviesUseCase: getTrendingMoviesUseCase)
+        let searchMoviesUseCase = MockSearchMoviesUseCase()
+        viewModel = MoviesViewModel(getGenresUseCase: getGenresUseCase,
+                                    getTrendingMoviesUseCase: getTrendingMoviesUseCase,
+                                    searchMoviesUseCase: searchMoviesUseCase)
         cancellables = []
     }
 
@@ -51,8 +63,8 @@ class MoviesViewModelTests: XCTestCase {
         wait(for: [expectation], timeout: 1)
     }
 
-    func testFetchMovies() {
-        let expectation = XCTestExpectation(description: "Fetch movies")
+    func testFetchTrendingMovies() {
+        let expectation = XCTestExpectation(description: "Fetch trending movies")
         viewModel.$movies
             .dropFirst()
             .sink { movies in
@@ -61,6 +73,21 @@ class MoviesViewModelTests: XCTestCase {
                 expectation.fulfill()
             }
             .store(in: &cancellables)
+        viewModel.searchText = ""
+        wait(for: [expectation], timeout: 1)
+    }
+
+    func testSearchMovies() {
+        let expectation = XCTestExpectation(description: "Search movies")
+        viewModel.$movies
+            .dropFirst()
+            .sink { movies in
+                XCTAssertEqual(movies.count, 1)
+                XCTAssertEqual(movies.first?.title, "Search Result")
+                expectation.fulfill()
+            }
+            .store(in: &cancellables)
+        viewModel.searchText = "test search"
         wait(for: [expectation], timeout: 1)
     }
 }

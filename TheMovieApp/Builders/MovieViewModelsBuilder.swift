@@ -52,7 +52,8 @@ final class MovieViewModelsBuilder {
         }
         return MoviesViewModel(
             getGenresUseCase: useCaseFactory.createGetGenresUseCase(),
-            getTrendingMoviesUseCase: useCaseFactory.createGetTrendingMoviesUseCase()
+            getTrendingMoviesUseCase: useCaseFactory.createGetTrendingMoviesUseCase(),
+            searchMoviesUseCase: useCaseFactory.createSearchMoviesUseCase()
         )
     }
     

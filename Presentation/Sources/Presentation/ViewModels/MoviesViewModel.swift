@@ -18,17 +18,20 @@ public class MoviesViewModel: ObservableObject {
 
     public let getGenresUseCase: GetGenresUseCaseProtocol
     public let getTrendingMoviesUseCase: GetTrendingMoviesUseCaseProtocol
+    public let searchMoviesUseCase: SearchMoviesUseCaseProtocol // Add this line
     public var cancellables = Set<AnyCancellable>()
     public var currentPage = 1
     public var isFetching = false
+    private var isSearchMode = false // Add this line
 
     /// Initializes the view model with the required use cases.
     public init(getGenresUseCase: GetGenresUseCaseProtocol,
-                getTrendingMoviesUseCase: GetTrendingMoviesUseCaseProtocol) {
+                getTrendingMoviesUseCase: GetTrendingMoviesUseCaseProtocol,
+                searchMoviesUseCase: SearchMoviesUseCaseProtocol) { // Update init
         self.getGenresUseCase = getGenresUseCase
         self.getTrendingMoviesUseCase = getTrendingMoviesUseCase
+        self.searchMoviesUseCase = searchMoviesUseCase // Add this line
         fetchGenres()
-        fetchMovies()
         setupSearch()
     }
 
@@ -42,17 +45,31 @@ public class MoviesViewModel: ObservableObject {
             .store(in: &cancellables)
     }
 
-    /// Fetches the list of trending movies with pagination support.
-    public func fetchMovies() {
+    /// Fetches movies based on search text and selected genres.
+    private func fetchMovies() {
         guard !isFetching else { return }
         isFetching = true
 
-        getTrendingMoviesUseCase.execute(page: currentPage)
+        let publisher: AnyPublisher<[Movie], Error>
+        if isSearchMode {
+            publisher = searchMoviesUseCase.execute(query: searchText, page: currentPage)
+        } else {
+            publisher = getTrendingMoviesUseCase.execute(page: currentPage, genreId: selectedGenres.first)
+        }
+
+        publisher
             .receive(on: DispatchQueue.main)
-            .sink(receiveCompletion: { [weak self] _ in
+            .sink(receiveCompletion: { [weak self] completion in
                 self?.isFetching = false
-            }, receiveValue: { [weak self] movies in
-                self?.movies.append(contentsOf: movies)
+                if case .failure(let error) = completion {
+                    print("Error fetching movies: \(error)")
+                }
+            }, receiveValue: { [weak self] newMovies in
+                if self?.currentPage == 1 {
+                    self?.movies = newMovies
+                } else {
+                    self?.movies.append(contentsOf: newMovies)
+                }
                 self?.currentPage += 1
             })
             .store(in: &cancellables)
@@ -60,18 +77,22 @@ public class MoviesViewModel: ObservableObject {
 
     /// Sets up search functionality with debounce.
     private func setupSearch() {
-        $searchText
+        Publishers.CombineLatest($searchText, $selectedGenres)
             .debounce(for: .milliseconds(300), scheduler: DispatchQueue.main)
-            .sink { _ in }
+            .sink { [weak self] searchText, selectedGenres in
+                self?.currentPage = 1
+                self?.isSearchMode = !searchText.isEmpty
+                self?.fetchMovies()
+            }
             .store(in: &cancellables)
     }
 
-    /// Computes the filtered list of movies based on search text and selected genres.
-    public var filteredMovies: [Movie] {
-        movies.filter { movie in
-            let matchesSearch = searchText.isEmpty || movie.title.lowercased().contains(searchText.lowercased())
-            let matchesGenre = selectedGenres.isEmpty || !(Set(movie.genreIDs ?? []).isDisjoint(with: selectedGenres))
-            return matchesSearch && matchesGenre
+    /// Loads more movies when reaching the end of the list.
+    public func loadMoreIfNeeded(currentItem: Movie?) {
+        guard let currentItem = currentItem, !isFetching else { return }
+        let thresholdIndex = movies.index(movies.endIndex, offsetBy: -5)
+        if movies.firstIndex(where: { $0.id == currentItem.id }) == thresholdIndex {
+            fetchMovies()
         }
     }
 }

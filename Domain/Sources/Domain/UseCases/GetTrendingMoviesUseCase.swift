@@ -16,7 +16,8 @@ public class GetTrendingMoviesUseCase: GetTrendingMoviesUseCaseProtocol {
         self.repository = repository
     }
 
-    public func execute(page: Int) -> AnyPublisher<[Movie], Error> {
-        repository.fetchTrendingMovies(page: page)
+    // Updated to include optional genreId parameter
+    public func execute(page: Int, genreId: Int?) -> AnyPublisher<[Movie], Error> {
+        repository.fetchTrendingMovies(page: page, genreId: genreId)
     }
 }

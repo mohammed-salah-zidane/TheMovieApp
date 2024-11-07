@@ -4,6 +4,7 @@
 //
 //  Created by Mohamed Salah on 03/10/2024.
 //
+//
 
 import Combine
 import Foundation
@@ -24,14 +25,22 @@ public class RemoteDataSource: RemoteDataSourceProtocol {
             .eraseToAnyPublisher()
     }
 
-    public func fetchTrendingMovies(page: Int) -> AnyPublisher<[Movie], Error> {
-        networkClient.fetch(url: Endpoints.trendingMovies(page: page).url)
+    // Updated to include optional genreId parameter
+    public func fetchTrendingMovies(page: Int, genreId: Int? = nil) -> AnyPublisher<[Movie], Error> {
+        networkClient.fetch(url: Endpoints.trendingMovies(page: page, genreId: genreId).url)
             .map { (response: MovieResponse) in response.results }
             .eraseToAnyPublisher()
     }
 
     public func fetchMovieDetail(id: Int) -> AnyPublisher<MovieDetail, Error> {
         networkClient.fetch(url: Endpoints.movieDetail(id: id).url)
+    }
+
+    // Added search function
+    public func searchMovies(query: String, page: Int) -> AnyPublisher<[Movie], Error> {
+        networkClient.fetch(url: Endpoints.search(query: query, page: page).url)
+            .map { (response: MovieResponse) in response.results }
+            .eraseToAnyPublisher()
     }
 }
 

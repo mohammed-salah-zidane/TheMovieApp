@@ -11,6 +11,9 @@ import Domain
 /// Protocol defining methods for remote data fetching.
 public protocol RemoteDataSourceProtocol {
     func fetchGenres() -> AnyPublisher<[Genre], Error>
-    func fetchTrendingMovies(page: Int) -> AnyPublisher<[Movie], Error>
+    // Updated to include optional genreId parameter
+    func fetchTrendingMovies(page: Int, genreId: Int?) -> AnyPublisher<[Movie], Error>
     func fetchMovieDetail(id: Int) -> AnyPublisher<MovieDetail, Error>
+    // Added search function
+    func searchMovies(query: String, page: Int) -> AnyPublisher<[Movie], Error>
 }

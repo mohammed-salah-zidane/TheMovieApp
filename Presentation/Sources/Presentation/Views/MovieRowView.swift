@@ -18,10 +18,20 @@ public struct MovieRowView: View {
 
     public var body: some View {
         HStack {
-            AsyncImage(url: URL(string: "\(ImageConstants.imageBaseURL)\(movie.posterPath ?? "")")) { image in
-                image.resizable()
-            } placeholder: {
-                Color.gray
+            AsyncImage(url: URL(string: "\(ImageConstants.imageBaseURL)\(movie.posterPath ?? "")")) { phase in
+                switch phase {
+                case .empty:
+                    ProgressView()
+                case .success(let image):
+                    image
+                        .resizable()
+                        .aspectRatio(contentMode: .fill)
+                case .failure:
+                    Image(systemName: "photo")
+                        .foregroundColor(.gray)
+                @unknown default:
+                    EmptyView()
+                }
             }
             .frame(width: 80, height: 120)
             .cornerRadius(8)

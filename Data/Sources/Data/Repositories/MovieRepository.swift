@@ -17,7 +17,13 @@ public class MovieRepository: MovieRepositoryProtocol {
         self.remoteDataSource = remoteDataSource
     }
 
-    public func fetchTrendingMovies(page: Int) -> AnyPublisher<[Movie], Error> {
-        remoteDataSource.fetchTrendingMovies(page: page)
+    // Updated to include optional genreId parameter
+    public func fetchTrendingMovies(page: Int, genreId: Int?) -> AnyPublisher<[Movie], Error> {
+        remoteDataSource.fetchTrendingMovies(page: page, genreId: genreId)
+    }
+
+    // Added search function
+    public func searchMovies(query: String, page: Int) -> AnyPublisher<[Movie], Error> {
+        remoteDataSource.searchMovies(query: query, page: page)
     }
 }

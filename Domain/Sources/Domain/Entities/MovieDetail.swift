@@ -20,43 +20,47 @@ public struct MovieDetail: Identifiable, Decodable {
     public let spokenLanguages: [SpokenLanguage]?
     public let status: String?
     public let runtime: Int?
+    public let backdropPath: String?
+    public let voteCount: Int?
+    public let tagline: String?
+    public let belongsToCollection: MovieCollection?
+    public let originalTitle: String?
+    public let originalLanguage: String?
+    public let originCountry: [String]?
+    public let productionCountries: [ProductionCountry]?
+    public let imdbID: String?
+    public let video: Bool?
+    public let popularity: Double?
+    public let productionCompanies: [ProductionCompany]?
+    public let adult: Bool?
+    public let voteAverage: Double?
 
-    public init(
-        id: Int,
-        title: String,
-        posterPath: String?,
-        releaseDate: String?,
-        genres: [Genre]?,
-        overview: String?,
-        homepage: String?,
-        budget: Int?,
-        revenue: Int?,
-        spokenLanguages: [SpokenLanguage]?,
-        status: String?,
-        runtime: Int?
-    ) {
-        self.id = id
-        self.title = title
-        self.posterPath = posterPath
-        self.releaseDate = releaseDate
-        self.genres = genres
-        self.overview = overview
-        self.homepage = homepage
-        self.budget = budget
-        self.revenue = revenue
-        self.spokenLanguages = spokenLanguages
-        self.status = status
-        self.runtime = runtime
-    }
-}
-
-/// Represents a spoken language in a movie.
-public struct SpokenLanguage: Decodable {
-    public let iso_639_1: String
-    public let name: String
-
-    public init(iso_639_1: String, name: String) {
-        self.iso_639_1 = iso_639_1
-        self.name = name
+    private enum CodingKeys: String, CodingKey {
+        case id
+        case title
+        case posterPath = "poster_path"
+        case releaseDate = "release_date"
+        case genres
+        case overview
+        case homepage
+        case budget
+        case revenue
+        case spokenLanguages = "spoken_languages"
+        case status
+        case runtime
+        case backdropPath = "backdrop_path"
+        case voteCount = "vote_count"
+        case tagline
+        case belongsToCollection = "belongs_to_collection"
+        case originalTitle = "original_title"
+        case originalLanguage = "original_language"
+        case originCountry = "origin_country"
+        case productionCountries = "production_countries"
+        case imdbID = "imdb_id"
+        case video
+        case popularity
+        case productionCompanies = "production_companies"
+        case adult
+        case voteAverage = "vote_average"
     }
 }

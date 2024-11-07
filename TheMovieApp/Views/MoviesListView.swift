@@ -26,27 +26,22 @@ struct MoviesListView<DetailView: View>: View {
                 SearchBar(text: $viewModel.searchText)
                 GenreChipsView(genres: viewModel.genres, selectedGenres: $viewModel.selectedGenres)
                 List {
-                    ForEach(viewModel.filteredMovies) { movie in
+                    ForEach(viewModel.movies) { movie in
                         NavigationLink(
                             destination: buildDetailView(movie.id)
                         ) {
                             MovieRowView(movie: movie)
                         }
+                        .onAppear {
+                            viewModel.loadMoreIfNeeded(currentItem: movie)
+                        }
                     }
-                    if viewModel.filteredMovies.isEmpty && viewModel.isFetching {
+                    if viewModel.isFetching {
                         ProgressView()
-                            .onAppear {
-                                viewModel.fetchMovies()
-                            }
                     }
                 }
             }
             .navigationTitle("Trending Movies")
-            .onAppear {
-                if viewModel.movies.isEmpty {
-                    viewModel.fetchMovies()
-                }
-            }
         }
     }
 }

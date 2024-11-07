@@ -40,7 +40,9 @@ struct MovieDetailView: View {
                     Text("Homepage: \(movie.homepage ?? "N/A")")
                     Text("Budget: $\(movie.budget ?? 0)")
                     Text("Revenue: $\(movie.revenue ?? 0)")
-                    Text("Spoken Languages: \(movie.spokenLanguages?.map { $0.name }.joined(separator: ", ") ?? "N/A")")
+                    Text(
+                        "Spoken Languages: \(movie.spokenLanguages?.map { $0.name ?? "N/A" }.joined(separator: ", ") ?? "N/A")"
+                    )
                     Text("Status: \(movie.status ?? "N/A")")
                     Text("Runtime: \(movie.runtime ?? 0) mins")
                 }

@@ -33,5 +33,10 @@ public class UseCaseFactory {
         let repository = repositoryFactory.createMovieDetailRepository()
         return GetMovieDetailUseCase(repository: repository)
     }
+    
+    public func createSearchMoviesUseCase() -> SearchMoviesUseCaseProtocol {
+        let repository = repositoryFactory.createMovieRepository()
+        return SearchMoviesUseCase(repository: repository)
+    }
 }
 
