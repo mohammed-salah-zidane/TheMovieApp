@@ -9,5 +9,5 @@ import Combine
 /// Protocol defining the use case for fetching trending movies.
 public protocol GetTrendingMoviesUseCaseProtocol {
     /// Executes the use case to fetch trending movies for a given page and optional genre.
-    func execute(page: Int, genreId: Int?) -> AnyPublisher<[Movie], Error>
+    func execute(page: Int, genreIds: [Int]?) -> AnyPublisher<[Movie], Error>
 }

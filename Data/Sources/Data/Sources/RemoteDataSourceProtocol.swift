@@ -12,7 +12,7 @@ import Domain
 public protocol RemoteDataSourceProtocol {
     func fetchGenres() -> AnyPublisher<[Genre], Error>
     // Updated to include optional genreId parameter
-    func fetchTrendingMovies(page: Int, genreId: Int?) -> AnyPublisher<[Movie], Error>
+    func fetchTrendingMovies(page: Int, genreIds: [Int]?) -> AnyPublisher<[Movie], Error>
     func fetchMovieDetail(id: Int) -> AnyPublisher<MovieDetail, Error>
     // Added search function
     func searchMovies(query: String, page: Int) -> AnyPublisher<[Movie], Error>

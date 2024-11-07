@@ -25,9 +25,8 @@ public class RemoteDataSource: RemoteDataSourceProtocol {
             .eraseToAnyPublisher()
     }
 
-    // Updated to include optional genreId parameter
-    public func fetchTrendingMovies(page: Int, genreId: Int? = nil) -> AnyPublisher<[Movie], Error> {
-        networkClient.fetch(url: Endpoints.trendingMovies(page: page, genreId: genreId).url)
+    public func fetchTrendingMovies(page: Int, genreIds: [Int]? = nil) -> AnyPublisher<[Movie], Error> {
+        networkClient.fetch(url: Endpoints.trendingMovies(page: page, genreIds: genreIds).url)
             .map { (response: MovieResponse) in response.results }
             .eraseToAnyPublisher()
     }
@@ -36,7 +35,6 @@ public class RemoteDataSource: RemoteDataSourceProtocol {
         networkClient.fetch(url: Endpoints.movieDetail(id: id).url)
     }
 
-    // Added search function
     public func searchMovies(query: String, page: Int) -> AnyPublisher<[Movie], Error> {
         networkClient.fetch(url: Endpoints.search(query: query, page: page).url)
             .map { (response: MovieResponse) in response.results }

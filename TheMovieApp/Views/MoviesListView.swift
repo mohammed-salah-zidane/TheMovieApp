@@ -9,7 +9,7 @@ import SwiftUI
 import Presentation
 import Domain
 
-/// View displaying a list of trending movies.
+/// View displaying a list of movies.
 struct MoviesListView<DetailView: View>: View {
     @StateObject private var viewModel: MoviesViewModel
     private let buildDetailView: (Int) -> DetailView
@@ -25,23 +25,57 @@ struct MoviesListView<DetailView: View>: View {
             VStack {
                 SearchBar(text: $viewModel.searchText)
                 GenreChipsView(genres: viewModel.genres, selectedGenres: $viewModel.selectedGenres)
-                List {
-                    ForEach(viewModel.movies) { movie in
-                        NavigationLink(
-                            destination: buildDetailView(movie.id)
-                        ) {
-                            MovieRowView(movie: movie)
-                        }
+                contentView
+            }
+            .navigationTitle("Movies")
+            .onAppear {
+                viewModel.fetchInitialData()
+            }
+        }
+    }
+
+    @ViewBuilder
+    private var contentView: some View {
+        switch viewModel.state {
+        case .idle:
+            Spacer()
+        case  .loading where viewModel.movies.isEmpty:
+            ProgressView()
+                .frame(maxWidth: .infinity, maxHeight: .infinity)
+        case .loaded, .loading:
+            moviesList
+        case .error(let message):
+            VStack {
+                Text("Error: \(message)")
+                    .multilineTextAlignment(.center)
+                    .padding()
+                Button("Retry") {
+                    viewModel.fetchInitialData()
+                }
+                .padding()
+            }
+            .frame(maxWidth: .infinity, maxHeight: .infinity)
+        }
+    }
+
+    private var moviesList: some View {
+        List {
+            ForEach(viewModel.movies) { movie in
+                NavigationLink(destination: buildDetailView(movie.id)) {
+                    MovieRowView(movie: movie)
                         .onAppear {
                             viewModel.loadMoreIfNeeded(currentItem: movie)
                         }
-                    }
-                    if viewModel.isFetching {
-                        ProgressView()
-                    }
                 }
             }
-            .navigationTitle("Trending Movies")
+            if viewModel.state == .loading {
+                HStack {
+                    Spacer()
+                    ProgressView()
+                    Spacer()
+                }
+            }
         }
+        .listStyle(PlainListStyle())
     }
 }
